@@ -1,0 +1,94 @@
+Given rust:
+
+Do (colons):
+  i
+  ::namespace::Something {\<CR>
+  field:1,\<CR>
+  }
+
+Expect:
+  ::namespace::Something {
+      field: 1, 
+  }
+
+Given rust:
+
+Do (arrows):
+  i
+  fn test(i:u32)->u32\<CR>
+  {\<CR>
+  match i {\<CR>
+  0=>1,\<CR>
+  _=>i*2,\<CR>
+  }\<CR>
+  }
+
+Expect:
+  fn test(i: u32) -> u32
+  {
+      match i {
+          0 => 1, 
+          _ => i * 2, 
+      }
+  }
+
+Given rust:
+
+Do (angle bracket):
+  i
+  if a<0&&b>n||e==1 {}\<CR>
+  let i:Box<u32>=Box::new(i<<7);\<CR>
+  let n=n>>7;\<CR>
+  let i:Vec<Box<u32>>;\<CR>
+  let i:Vec<Box<u32>>=Vec::new();\<CR>
+  let n=(<T as Trait>::something());\<CR>
+  let n=Vec::<u8>::new();\<CR>
+  fn test_f<T>(a:Vec<u8>)-><Vec<u32> as Iterator>::Item;\<CR>
+  fn test2<T:Itereator>(t:&'static<T as Iterator>::Item);
+
+Expect:
+  if a < 0 && b > n || e == 1 {}
+  let i: Box<u32> = Box::new(i << 7); 
+  let n = n >> 7; 
+  let i: Vec<Box<u32>>; 
+  let i: Vec<Box<u32>> = Vec::new(); 
+  let n = (<T as Trait>::something()); 
+  let n = Vec::<u8>::new(); 
+  fn test_f<T>(a: Vec<u8>) -> <Vec<u32> as Iterator>::Item; 
+  fn test2<T: Itereator>(t: &'static <T as Iterator>::Item); 
+
+Given rust:
+
+Do (pointers and references):
+  i
+  let i:&str="test";\<CR>
+  let iptr:*str="test";\<CR>
+  let n=&i[0];\<CR>
+  let n=(*n);\<CR>
+  let n=<Vec<&u32> as Clone>::clone(myvec);\<CR>
+  let n=&0u32 as*const i32;\<CR>
+  let n=&&*i;
+
+Expect:
+  let i: &str = "test"; 
+  let iptr: *str = "test"; 
+  let n = &i[0]; 
+  let n = (*n); 
+  let n = <Vec<&u32> as Clone>::clone(myvec); 
+  let n = &0u32 as *const i32; 
+  let n = &&*i; 
+
+Given rust:
+
+Do (pipe):
+  i
+  let i=true||false;\<CR>
+  let i=||false;\<CR>
+  let i=|i|i+2;\<CR>
+  let i=&mut|i|i+2;
+
+Expect:
+  let i = true || false; 
+  let i = || false; 
+  let i = |i| i + 2; 
+  let i = &mut |i| i + 2; 
