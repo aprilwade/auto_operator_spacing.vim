@@ -330,7 +330,7 @@ AutoOperatorSpacingAddRule "python", "=", funcref('s:python_equals')
 
 func s:python_minus()
   " Special case for l[:-1]
-  if s:nearest_open_delimeter() == '[' && search('\_s*\%#', 'bnW')
+  if s:nearest_open_delimeter() == '[' && search(':\_s*\%#', 'bnW')
     return '-'
   else
     return s:generic_minus()
