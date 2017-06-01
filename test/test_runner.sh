@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 vim -Nu <( cat << EOF
   filetype off
   set rtp+=~/.vim/bundle/vader.vim
