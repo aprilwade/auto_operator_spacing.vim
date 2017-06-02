@@ -127,6 +127,16 @@ func s:attempt_respacing()
     let l:backspaces = l:start_col - l:post_whitespace_col
   endif
 
+  let s:phantom_spaces = len(l:action) - match(l:action, '\s\+$')
+  if s:phantom_spaces > 0
+    let s:phantom_spaces_ignore = len(l:action)
+    augroup auto_operator_spacing_phantom_spaces
+      au!
+      autocmd InsertCharPre * call <SID>insert_char_pre_skip_expansion()
+      autocmd InsertEnter * call <SID>clear_phantom_space_autocmds()
+    augroup END
+  endif
+
   " Restore the cursor to its original position
   call winrestview(l:save_view)
   return repeat("\<BS>", l:backspaces) . l:action
@@ -171,6 +181,39 @@ func s:add_mapping(char)
   "exec "imap <buffer> " . l:char . " " . l:char . "<Plug>AutoOperatorSpacing"
   exec "inoremap <script><buffer> " . l:char . " "
                 \ . l:char . "<C-R>=<SID>attempt_respacing()<CR>"
+endfunc
+
+let s:phantom_spaces_ignore = 0
+func s:insert_char_pre_skip_expansion()
+  " Ignore the characters from the mapping itself
+  if s:phantom_spaces_ignore > 0
+      let s:phantom_spaces_ignore -= 1
+  else
+    " Setup new auto commands to skip spaces if needed
+    augroup auto_operator_spacing_phantom_spaces
+      au!
+      autocmd InsertCharPre * call <SID>insert_char_pre_skip_spaces()
+      autocmd CursorMovedI * call <SID>clear_phantom_space_autocmds()
+      autocmd InsertEnter * call <SID>clear_phantom_space_autocmds()
+    augroup END
+    " We've been called in response to the first non-expansion character
+    " typed, so we need to check this character to see if its a space
+    call s:insert_char_pre_skip_spaces()
+  endif
+endfunc
+
+let s:phantom_spaces = 0
+func s:insert_char_pre_skip_spaces()
+  if v:char == ' ' && s:phantom_spaces > 0
+    let s:phantom_spaces -= 1
+    let v:char = ''
+  endif
+endfunc
+
+func s:clear_phantom_space_autocmds()
+  augroup auto_operator_spacing_phantom_spaces
+    au!
+  augroup END
 endfunc
 
 

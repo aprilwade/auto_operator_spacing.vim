@@ -27,3 +27,12 @@ Do (leading spaces):
 Expect:
   (1
       + 
+
+Given:
+
+Do (Phantom space):
+  i
+  i+ 1
+
+Expect:
+  i + 1
