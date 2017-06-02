@@ -6,4 +6,4 @@ vim -Nu <( cat << EOF
   filetype plugin indent on
   syntax enable
 EOF
-) +Vader! $@
+) +Vader! all.vader

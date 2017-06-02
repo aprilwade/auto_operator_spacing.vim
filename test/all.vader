@@ -1,0 +1,3 @@
+Include (Generic tests): generic.vader
+Include (Rust tests):    rust.vader
+Include (Python tests):  python.vader
