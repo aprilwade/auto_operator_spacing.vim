@@ -127,7 +127,14 @@ func s:attempt_respacing()
     let l:backspaces = l:start_col - l:post_whitespace_col
   endif
 
-  let s:phantom_spaces = len(l:action) - match(l:action, '\s\+$')
+  if g:auto_operator_spacing_phantom_spaces
+    let l:trailing_spaces_start = match(l:action, '\s\+$')
+    if l:trailing_spaces_start != -1
+      let s:phantom_spaces = len(l:action) - l:trailing_spaces_start
+    else
+      let s:phantom_spaces = 0
+    endif
+
   if s:phantom_spaces > 0
     let s:phantom_spaces_ignore = len(l:action)
     augroup auto_operator_spacing_phantom_spaces
@@ -135,6 +142,7 @@ func s:attempt_respacing()
       autocmd InsertCharPre * call <SID>insert_char_pre_skip_expansion()
       autocmd InsertEnter * call <SID>clear_phantom_space_autocmds()
     augroup END
+  endif
   endif
 
   " Restore the cursor to its original position
@@ -183,6 +191,7 @@ func s:add_mapping(char)
                 \ . l:char . "<C-R>=<SID>attempt_respacing()<CR>"
 endfunc
 
+let g:auto_operator_spacing_phantom_spaces = 1
 let s:phantom_spaces_ignore = 0
 func s:insert_char_pre_skip_expansion()
   " Ignore the characters from the mapping itself
@@ -207,6 +216,12 @@ func s:insert_char_pre_skip_spaces()
   if v:char == ' ' && s:phantom_spaces > 0
     let s:phantom_spaces -= 1
     let v:char = ''
+  else
+    " Technically, we wouldn't need to call this here. The CursorMovedI
+    " autocmd would do it for us, but it doesn't fire from within a vader
+    " test, so we need to work around that
+    let s:phantom_spaces = 0
+    call s:clear_phantom_space_autocmds()
   endif
 endfunc
 
@@ -216,6 +231,16 @@ func s:clear_phantom_space_autocmds()
   augroup END
 endfunc
 
+func s:strip_phantom_spaces_return()
+  call s:clear_phantom_space_autocmds()
+  if s:phantom_spaces > 0
+    let l:ret = repeat("\<BS>", s:phantom_spaces) . "\<CR>"
+    let s:phantom_spaces = 0
+    return l:ret
+  else
+    return "\<CR>"
+  endif
+endfunc
 
 func s:add_standard_mappings()
   AutoOperatorSpacingAddMapping =
@@ -236,9 +261,8 @@ func s:add_standard_mappings()
   AutoOperatorSpacingAddMapping >
   AutoOperatorSpacingAddMapping /
   AutoOperatorSpacingAddMapping ?
+  inoremap <expr> <CR> <SID>strip_phantom_spaces_return()
 endfunc
-
-"inoremap <Plug>AutoOperatorSpacing <C-R>=<SID>attempt_respacing()<CR>
 
 command -nargs=1 AutoOperatorSpacingAddMapping :call s:add_mapping('<args>')
 command -nargs=0 AutoOperatorSpacingStandardMappings :call s:add_standard_mappings()

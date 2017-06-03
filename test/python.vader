@@ -32,5 +32,5 @@ Do (= operator):
 
 Expect:
   i = 1
-  def func(i=None): 
+  def func(i=None):
       call(test=1)
