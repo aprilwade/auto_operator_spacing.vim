@@ -425,7 +425,11 @@ func s:rust_probably_unary()
 endfunc
 
 func s:rust_scope()
-  if s:rust_probably_unary() != 0
+  " If preceded by a >, we need to see if it is part of a typename or
+  " expression
+  if search('>\_s*\%#', 'bW') != 0
+    return s:rust_close_angle_shared(' ::', '::')
+  elseif s:rust_probably_unary() != 0
     return ' ::'
   else
     return '::'
