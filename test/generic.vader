@@ -32,7 +32,11 @@ Given:
 
 Do (Phantom space):
   i
-  i+ 1
+  i+ 1\<CR>
+  if i==\<CR>
+  ;
 
 Expect:
   i + 1
+  if i ==
+  ;

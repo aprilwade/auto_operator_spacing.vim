@@ -135,14 +135,14 @@ func s:attempt_respacing()
       let s:phantom_spaces = 0
     endif
 
-  if s:phantom_spaces > 0
-    let s:phantom_spaces_ignore = len(l:action)
-    augroup auto_operator_spacing_phantom_spaces
-      au!
-      autocmd InsertCharPre * call <SID>insert_char_pre_skip_expansion()
-      autocmd InsertEnter * call <SID>clear_phantom_space_autocmds()
-    augroup END
-  endif
+    if s:phantom_spaces > 0
+      let s:phantom_spaces_ignore = len(l:action)
+      augroup auto_operator_spacing_phantom_spaces
+        au!
+        autocmd InsertCharPre * call <SID>insert_char_pre_skip_expansion()
+        autocmd InsertEnter * call <SID>clear_phantom_space_autocmds()
+      augroup END
+    endif
   endif
 
   " Restore the cursor to its original position
@@ -226,16 +226,16 @@ func s:insert_char_pre_skip_spaces()
 endfunc
 
 func s:clear_phantom_space_autocmds()
+  let s:phantom_spaces = 0
   augroup auto_operator_spacing_phantom_spaces
     au!
   augroup END
 endfunc
 
 func s:strip_phantom_spaces_return()
-  call s:clear_phantom_space_autocmds()
   if s:phantom_spaces > 0
     let l:ret = repeat("\<BS>", s:phantom_spaces) . "\<CR>"
-    let s:phantom_spaces = 0
+    call s:clear_phantom_space_autocmds()
     return l:ret
   else
     return "\<CR>"
@@ -261,7 +261,7 @@ func s:add_standard_mappings()
   AutoOperatorSpacingAddMapping >
   AutoOperatorSpacingAddMapping /
   AutoOperatorSpacingAddMapping ?
-  inoremap <expr> <CR> <SID>strip_phantom_spaces_return()
+  inoremap <expr><buffer> <CR> <SID>strip_phantom_spaces_return()
 endfunc
 
 command -nargs=1 AutoOperatorSpacingAddMapping :call s:add_mapping('<args>')
