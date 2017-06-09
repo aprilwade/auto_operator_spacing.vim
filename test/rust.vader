@@ -85,10 +85,12 @@ Do (pipe):
   let i=true||false;\<CR>
   let i=||false;\<CR>
   let i=|i|i+2;\<CR>
-  let i=&mut|i|i+2;
+  let i=&mut|i|i+2;\<CR>
+  some_func(||i+1);
 
 Expect:
   let i = true || false;
   let i = || false;
   let i = |i| i + 2;
-  let i = &mut |i| i + 2; 
+  let i = &mut |i| i + 2;
+  some_func(|| i + 1); 

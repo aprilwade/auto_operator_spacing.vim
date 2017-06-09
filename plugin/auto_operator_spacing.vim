@@ -526,4 +526,13 @@ func s:rust_pipe()
   return ' | '
 endfunc
 AutoOperatorSpacingAddRule "rust", "|", funcref('s:rust_pipe')
+
+func s:rust_double_pipe()
+  if search('[[({]\_s*\%#', 'bnW') != 0
+    return '|| '
+  else
+    return ' || '
+  endif
+endfunc
+AutoOperatorSpacingAddRule "rust", "||", funcref('s:rust_double_pipe')
 " }}}
