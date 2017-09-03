@@ -415,7 +415,7 @@ AutoOperatorSpacingAddRule "rust", "/*", '/* '
 
 let s:rust_keywords = join(
   \ ['\<return\>', '\<yield\>', '\<match\>', '\<as\>', '\<where\>', '\<mut\>',
-  \  '\<if\>', '\<while\>', '\<in\>', '\<use\>', '\<impl\>'],
+  \  '\<if\>', '\<while\>', '\<in\>', '\<use\>', '\<impl\>', '\<move\>'],
   \ '\|'
 \)
 " A slightly tweaked version of s:probably_unary. Handles rust keywords and
@@ -535,4 +535,8 @@ func s:rust_double_pipe()
   endif
 endfunc
 AutoOperatorSpacingAddRule "rust", "||", funcref('s:rust_double_pipe')
+" }}}
+
+" Vim rules {{{
+AutoOperatorSpacingAddRule "vim", ":", v:null
 " }}}
