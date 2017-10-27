@@ -14,14 +14,25 @@ func! s:check_for_duplicate_rule(category, text)
 
   let l:rules = s:rule_categories[a:category]
   for r in l:rules
-    if r[0] == a:text
+    if r.ident == a:text
       return 1
     endif
   endfor
   return 0
 endfunc
 
-func s:add_rule(category, text, action)
+func s:add_custom_rule(category, ident, sort_weight, regex, action)
+  let l:rules = s:ensure_rule_list(a:category)
+  call add(l:rules, {
+  \ 'ident': a:ident,
+  \ 'sort_weight': a:sort_weight,
+  \ 'regex': a:regex,
+  \ 'action': a:action,
+  \ })
+  call s:sort_rule_list(rules)
+endfunc
+
+func s:add_rule(category, text, Action)
   if match(a:text, '\s') != -1
     echoerr 'Rules may not contain white space'
     return
@@ -36,16 +47,25 @@ func s:add_rule(category, text, action)
   let l:regex = '\V' . join(l:list, '\s\*') . '\%#'
 
   let l:rules = s:ensure_rule_list(a:category)
-  call add(l:rules, [a:text, l:regex, a:action])
+  call add(l:rules, {
+  \ 'ident': a:text,
+  \ 'sort_weight': strlen(a:text),
+  \ 'regex': l:regex,
+  \ 'action': type(a:Action) == v:t_func ? {_ -> a:Action()} : {_ -> a:Action},
+  \ })
+  call s:sort_rule_list(rules)
+endfunc
+
+func s:sort_rule_list(rules)
   " Note that the comparison here is backwards so we can achieve a greatest to
   " smallest ordering
-  call sort(l:rules, {r, l -> strlen(r[0]) > strlen(l[0]) ? -1
-                          \ : strlen(r[0]) == strlen(l[0]) ? 0 : 1})
+  call sort(a:rules, {r, l -> r.sort_weight > l.sort_weight ? -1
+                          \ : r.sort_weight == l.sort_weight ? 0 : 1})
 endfunc
 
 func s:remove_rule(category, text)
   let l:rules = s:ensure_rule_list(a:category)
-  call filter(l:rules, {i, rule -> rule[0] != a:text})
+  call filter(l:rules, {i, rule -> rule.ident != a:text})
 endfunc
 
 func s:attempt_respacing()
@@ -86,7 +106,7 @@ func s:attempt_respacing()
   " restore it later.
   let l:start_col = col('.')
   let l:save_view = winsaveview()
-  " Capital letter for MatchingRuleAction because it can be a Funcref
+  " Capital letter for MatchingRuleAction because it is a Funcref
   let l:MatchingRuleAction = s:find_first_match(l:rule_lists)
   unlet l:rule_lists
 
@@ -103,12 +123,8 @@ func s:attempt_respacing()
   call searchpos('\s*\%#', 'b')
   let l:post_whitespace_col = col('.')
 
-  if type(l:MatchingRuleAction) == v:t_func
-    " If MatchingRuleAction is a Funcref, evaluate it
-    let l:action = l:MatchingRuleAction()
-  else
-    let l:action = l:MatchingRuleAction
-  endif
+  " If MatchingRuleAction is a Funcref, evaluate it
+  let l:action = l:MatchingRuleAction(l:start_col)
   unlet l:MatchingRuleAction
 
   if type(l:action) == v:t_none
@@ -150,29 +166,30 @@ func s:attempt_respacing()
   return repeat("\<BS>", l:backspaces) . l:action
 endfunc
 
+let s:minint = (-1) / 0
 " A helper to find the longest matching rule. Each rule list is sorted, so if
 " we treverse all of them in parallel, the first match we find is the longest.
 func s:find_first_match(rule_lists)
   while 1
-    let l:max_len = 0
+    let l:max_weight = s:minint
     for [l:rules, l:i] in a:rule_lists
-      if l:i < len(l:rules) && len(l:rules[l:i][0]) > l:max_len
-        let l:max_len = len(l:rules[l:i][0])
+      if l:i < len(l:rules) && l:rules[l:i].sort_weight > l:max_weight
+        let l:max_weight = l:rules[l:i].sort_weight
       endif
     endfor
-    if l:max_len <= 0
+    if l:max_weight == s:minint
       return v:none
     endif
 
     for rl in a:rule_lists
       while 1
         let [rules, i] =  rl
-        if l:i >= len(l:rules) || len(l:rules[l:i][0]) < l:max_len
+        if l:i >= len(l:rules) || l:rules[l:i].sort_weight < l:max_weight
           break
         endif
 
-        if search(l:rules[l:i][1], 'bW') > 0
-          return l:rules[l:i][2]
+        if search(l:rules[l:i].regex, 'bW') > 0
+          return l:rules[l:i].action
         endif
 
         let l:rl[1] += 1
@@ -267,6 +284,7 @@ endfunc
 command -nargs=1 AutoOperatorSpacingAddMapping :call s:add_mapping('<args>')
 command -nargs=0 AutoOperatorSpacingStandardMappings :call s:add_standard_mappings()
 command -nargs=+ AutoOperatorSpacingAddRule :call s:add_rule(<args>)
+command -nargs=+ AutoOperatorSpacingAddCustomRule :call s:add_custom_rule(<args>)
 
 " Helpers/Utilities {{{
 " Stolen from matchparen.vim
@@ -297,9 +315,9 @@ endfunc
 
 " Returns the type of the nearest open delimeter (one of (, [, or {)
 func s:nearest_open_delimeter()
-  let paren_pos = searchpairpos('(', '', ')', 'nb', g:auto_operator_spacing_ignore_expr_searchpair)
-  let bracket_pos = searchpairpos('\[', '', '\]', 'nb', g:auto_operator_spacing_ignore_expr_searchpair)
-  let brace_pos = searchpairpos('{', '', '}', 'nb', g:auto_operator_spacing_ignore_expr_searchpair)
+  let paren_pos = searchpairpos('(', '', ')', 'nbW', g:auto_operator_spacing_ignore_expr_searchpair)
+  let bracket_pos = searchpairpos('\[', '', '\]', 'nbW', g:auto_operator_spacing_ignore_expr_searchpair)
+  let brace_pos = searchpairpos('{', '', '}', 'nbW', g:auto_operator_spacing_ignore_expr_searchpair)
   if paren_pos == [0, 0] && bracket_pos == [0, 0] && brace_pos == [0, 0]
     return ''
   endif
@@ -539,4 +557,31 @@ AutoOperatorSpacingAddRule "rust", "||", funcref('s:rust_double_pipe')
 
 " Vim rules {{{
 AutoOperatorSpacingAddRule "vim", ":", v:null
+" }}}
+
+" Helper function for languages with Haskell-like syntax
+func s:functional_binop(start_col)
+  let l:text = getline(".")[col('.') - 1 : a:start_col]
+  return ' ' . substitute(l:text, '\s', "", "g") . ' '
+endfunc
+
+
+" Coq rules {{{
+AutoOperatorSpacingAddRule "coq", ",", ', '
+AutoOperatorSpacingAddRule "coq", ":", ': '
+AutoOperatorSpacingAddRule "coq", ".", '.'
+
+let s:op_symbols = '\([!#$%&*+./<=>?@\\^|~:-]\|\s\)'
+AutoOperatorSpacingAddCustomRule "coq", "binop", -1,
+  \ s:op_symbols . '\+\%#', funcref('s:functional_binop')
+
+" }}}
+
+" Elm rules {{{
+AutoOperatorSpacingAddRule "elm", ",", ', '
+AutoOperatorSpacingAddRule "elm", ".", v:none
+
+let s:op_symbols = '\([!#$%&*+./<=>?@\\^|~:-]\|\s\)'
+AutoOperatorSpacingAddCustomRule "elm", "binop", -1,
+  \ s:op_symbols . '\+\%#', funcref('s:functional_binop')
 " }}}

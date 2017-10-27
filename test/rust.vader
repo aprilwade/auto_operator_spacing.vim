@@ -1,6 +1,6 @@
 Given rust:
 
-Do (colons):
+Do (Rust colons):
   i
   ::namespace::Something {\<CR>
   field:1,\<CR>
@@ -13,7 +13,7 @@ Expect:
 
 Given rust:
 
-Do (arrows):
+Do (Rust arrows):
   i
   fn test(i:u32)->u32\<CR>
   {\<CR>
@@ -34,7 +34,7 @@ Expect:
 
 Given rust:
 
-Do (angle bracket):
+Do (Rust angle bracket):
   i
   if a<0&&b>n||e==1 {}\<CR>
   let i:Box<u32>=Box::new(i<<7);\<CR>
@@ -59,7 +59,7 @@ Expect:
 
 Given rust:
 
-Do (pointers and references):
+Do (Rust pointers and references):
   i
   let i:&str="test";\<CR>
   let iptr:*str="test";\<CR>
@@ -80,7 +80,7 @@ Expect:
 
 Given rust:
 
-Do (pipe):
+Do (Rust pipe):
   i
   let i=true||false;\<CR>
   let i=||false;\<CR>

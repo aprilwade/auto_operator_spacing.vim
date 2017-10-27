@@ -2,14 +2,14 @@ Execute:
   let b:auto_operator_spacing_categories = "generic"
   AutoOperatorSpacingStandardMappings
 
-Do (basic binary operators):
+Do (Generic basic binary operators):
   i
   i=1+2-3*4/5
 
 Expect:
   i = 1 + 2 - 3 * 4 / 5
 
-Do (Unary minus):
+Do (Generic unary minus):
   0C
   i=-1\<CR>
   return-1
@@ -21,7 +21,7 @@ Expect:
 Given:
 
 
-Do (leading spaces):
+Do (Generic leading spaces):
   i(1\<CR>    +
 
 Expect:
@@ -30,7 +30,7 @@ Expect:
 
 Given:
 
-Do (Phantom space):
+Do (Generic phantom space):
   i
   i+ 1\<CR>
   if i==\<CR>

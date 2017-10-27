@@ -1,3 +1,5 @@
 Include (Generic tests): generic.vader
 Include (Rust tests):    rust.vader
 Include (Python tests):  python.vader
+Include (Coq tests):     coq.vader
+Include (Elm tests):     elm.vader

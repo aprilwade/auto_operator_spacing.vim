@@ -1,0 +1,12 @@
+Given elm:
+
+Do (Elm basic operators):
+  i
+  func:Int->Int\<CR>
+  type R={ a:Int,b:Int }\<CR>
+  idk r=r.a
+
+Expect:
+  func : Int -> Int
+  type R = { a : Int, b : Int }
+  idk r = r.a

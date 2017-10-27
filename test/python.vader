@@ -1,6 +1,6 @@
 Given python:
 
-Do (** operator):
+Do (Python ** operator):
   i
   dict(**{})\<CR>
   something(1,**var)\<CR>
@@ -13,7 +13,7 @@ Expect:
 
 Given python:
 
-Do (: and -):
+Do (Python : and -):
   i
   "test"[1:3:-1]\<CR>
   i=1+-1
@@ -24,7 +24,7 @@ Expect:
 
 Given python:
 
-Do (= operator):
+Do (Python = operator):
   i
   i=1\<CR>
   def func(i=None):\<CR>

@@ -1,0 +1,24 @@
+Given coq:
+
+Do (Coq basic operators):
+  i
+  Definition isEmpty (s:stack):bool:=\<CR>
+  match s with\<CR>
+  |empty=>false\<CR>
+  |add _ _=>true\<CR>
+  end.
+
+Expect:
+  Definition isEmpty (s: stack): bool :=
+  match s with
+  | empty => false
+  | add _ _ => true
+  end.
+
+Given coq:
+
+Do (Coq mutli-symbol operators):
+  i
+  Theorem idk:forall n:nat,n<>n++1.
+Expect:
+  Theorem idk: forall n: nat, n <> n ++ 1.
