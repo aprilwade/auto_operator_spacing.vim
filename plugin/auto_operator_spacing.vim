@@ -1,3 +1,11 @@
+" Enables/disables the plugin
+let g:auto_operator_spacing = 1
+
+" Enables/disables swallowing of spaces when automatically inserting them
+" after an operator.
+let g:auto_operator_spacing_phantom_spaces = 1
+
+
 let s:rule_categories = {}
 
 func s:ensure_rule_list(category)
@@ -69,6 +77,9 @@ func s:remove_rule(category, text)
 endfunc
 
 func s:attempt_respacing()
+  if !g:auto_operator_spacing
+    return ''
+  endif
   if !exists("b:auto_operator_spacing_categories")
     return ''
   endif
@@ -80,7 +91,7 @@ func s:attempt_respacing()
 
   if exists('b:auto_operator_spacing_ignore_comments_and_strings') &&
    \ b:auto_operator_spacing_ignore_comments_and_strings &&
-   \ eval(g:auto_operator_spacing_ignore_expr) != 0
+   \ eval(s:auto_operator_spacing_ignore_expr) != 0
     return ''
   endif
 
@@ -208,7 +219,6 @@ func s:add_mapping(char)
                 \ . l:char . "<C-R>=<SID>attempt_respacing()<CR>"
 endfunc
 
-let g:auto_operator_spacing_phantom_spaces = 1
 let s:phantom_spaces_ignore = 0
 func s:insert_char_pre_skip_expansion()
   " Ignore the characters from the mapping itself
@@ -288,10 +298,10 @@ command -nargs=+ AutoOperatorSpacingAddCustomRule :call s:add_custom_rule(<args>
 
 " Helpers/Utilities {{{
 " Stolen from matchparen.vim
-let g:auto_operator_spacing_ignore_expr =
+let s:auto_operator_spacing_ignore_expr =
     \ '!empty(filter(map(synstack(line("."), col(".") - 1), ''synIDattr(v:val, "name")''), ' .
     \ '''v:val =~? "string\\|character\\|singlequote\\|escape\\|comment"''))'
-let g:auto_operator_spacing_ignore_expr_searchpair =
+let s:auto_operator_spacing_ignore_expr_searchpair =
     \ '!empty(filter(map(synstack(line("."), col(".")), ''synIDattr(v:val, "name")''), ' .
     \ '''v:val =~? "string\\|character\\|singlequote\\|escape\\|comment"''))'
 func s:probably_unary()
@@ -315,9 +325,9 @@ endfunc
 
 " Returns the type of the nearest open delimeter (one of (, [, or {)
 func s:nearest_open_delimeter()
-  let paren_pos = searchpairpos('(', '', ')', 'nbW', g:auto_operator_spacing_ignore_expr_searchpair)
-  let bracket_pos = searchpairpos('\[', '', '\]', 'nbW', g:auto_operator_spacing_ignore_expr_searchpair)
-  let brace_pos = searchpairpos('{', '', '}', 'nbW', g:auto_operator_spacing_ignore_expr_searchpair)
+  let paren_pos = searchpairpos('(', '', ')', 'nbW', s:auto_operator_spacing_ignore_expr_searchpair)
+  let bracket_pos = searchpairpos('\[', '', '\]', 'nbW', s:auto_operator_spacing_ignore_expr_searchpair)
+  let brace_pos = searchpairpos('{', '', '}', 'nbW', s:auto_operator_spacing_ignore_expr_searchpair)
   if paren_pos == [0, 0] && bracket_pos == [0, 0] && brace_pos == [0, 0]
     return ''
   endif
@@ -509,7 +519,7 @@ AutoOperatorSpacingAddRule "rust", "<", funcref('s:rust_open_angle')
 
 func s:rust_close_angle_shared(binary_op, typename_op)
   " We base our decision off of the opening angle bracket, so try to find it
-  let l:found = searchpair('<', '', '>', 'b', g:auto_operator_spacing_ignore_expr)
+  let l:found = searchpair('<', '', '>', 'b', s:auto_operator_spacing_ignore_expr)
   if l:found <= 0
     return a:binary_op
   endif
