@@ -571,7 +571,7 @@ AutoOperatorSpacingAddRule "vim", ":", v:null
 
 " Helper function for languages with Haskell-like syntax
 func s:functional_binop(start_col)
-  let l:text = getline(".")[col('.') - 1 : a:start_col]
+  let l:text = getline(".")[col('.') - 1 : a:start_col - 2]
   return ' ' . substitute(l:text, '\s', "", "g") . ' '
 endfunc
 
@@ -581,9 +581,9 @@ AutoOperatorSpacingAddRule "coq", ",", ', '
 AutoOperatorSpacingAddRule "coq", ":", ': '
 AutoOperatorSpacingAddRule "coq", ".", '.'
 
-let s:op_symbols = '\([!#$%&*+./<=>?@\\^|~:-]\|\s\)'
+let s:op_symbols = '[!#$%&*+./<=>?@\\^|~:-]'
 AutoOperatorSpacingAddCustomRule "coq", "binop", -1,
-  \ s:op_symbols . '\+\%#', funcref('s:functional_binop')
+  \ s:op_symbols . '\(' . s:op_symbols . '\|\s\)*\%#', funcref('s:functional_binop')
 
 " }}}
 
@@ -591,7 +591,16 @@ AutoOperatorSpacingAddCustomRule "coq", "binop", -1,
 AutoOperatorSpacingAddRule "elm", ",", ', '
 AutoOperatorSpacingAddRule "elm", ".", v:none
 
-let s:op_symbols = '\([!#$%&*+./<=>?@\\^|~:-]\|\s\)'
+let s:op_symbols = '[!#$%&*+./<=>?@\\^|~:-]'
 AutoOperatorSpacingAddCustomRule "elm", "binop", -1,
-  \ s:op_symbols . '\+\%#', funcref('s:functional_binop')
+  \ s:op_symbols . '\(' . s:op_symbols . '\|\s\)*\%#', funcref('s:functional_binop')
+" }}}
+
+" Haskell rules {{{
+AutoOperatorSpacingAddRule "haskell", ",", ', '
+AutoOperatorSpacingAddRule "haskell", ".", v:none
+
+let s:op_symbols = '[!#$%&*+./<=>?@\\^|~:-]'
+AutoOperatorSpacingAddCustomRule "haskell", "binop", -1,
+  \ s:op_symbols . '\(' . s:op_symbols . '\|\s\)*\%#', funcref('s:functional_binop')
 " }}}

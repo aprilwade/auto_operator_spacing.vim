@@ -1,0 +1,17 @@
+Given haskell:
+
+Do (In the middle of an expression):
+  i
+  i + 3\<ESC>Bi-h \<ESC>
+
+Expect:
+  i - h + 3
+
+Do (Multi line):
+  i
+  some text+i\<CR>
+  \<Tab>-i
+
+Expect:
+  some text + i
+      - i
