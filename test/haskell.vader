@@ -15,3 +15,10 @@ Do (Multi line):
 Expect:
   some text + i
       - i
+
+Do (Points free):
+  i
+  (++)i
+
+Expect:
+  (++) i

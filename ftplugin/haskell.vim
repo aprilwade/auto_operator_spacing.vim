@@ -9,3 +9,6 @@ if exists("b:undo_ftplugin")
 else
   let b:undo_ftplugin = s:undo_ftplugin
 endif
+
+AutoOperatorSpacingAddMapping (
+AutoOperatorSpacingAddMapping )

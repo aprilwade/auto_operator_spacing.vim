@@ -572,7 +572,11 @@ AutoOperatorSpacingAddRule "vim", ":", v:null
 " Helper function for languages with Haskell-like syntax
 func s:functional_binop(start_col)
   let l:text = getline(".")[col('.') - 1 : a:start_col - 2]
-  return ' ' . substitute(l:text, '\s', "", "g") . ' '
+  if search('(\s*\%#', 'bnW') != 0
+    return '' . substitute(l:text, '\s', "", "g") . ' '
+  else
+    return ' ' . substitute(l:text, '\s', "", "g") . ' '
+  endif
 endfunc
 
 
@@ -598,6 +602,8 @@ AutoOperatorSpacingAddCustomRule "elm", "binop", -1,
 
 " Haskell rules {{{
 AutoOperatorSpacingAddRule "haskell", ",", ', '
+AutoOperatorSpacingAddRule "haskell", "(", ' ('
+AutoOperatorSpacingAddRule "haskell", ")", ') '
 AutoOperatorSpacingAddRule "haskell", ".", v:none
 
 let s:op_symbols = '[!#$%&*+./<=>?@\\^|~:-]'
