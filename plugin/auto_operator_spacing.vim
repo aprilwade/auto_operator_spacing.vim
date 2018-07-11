@@ -486,7 +486,7 @@ func s:rust_ampersand_or_star(op)
     if l:n == '<' || l:n == ' <'
       return a:op
     else
-      return ' ' . a:po
+      return ' ' . a:op
     endif
   elseif search('[[({]\_s*\%#', 'bnW') != 0
     return a:op
