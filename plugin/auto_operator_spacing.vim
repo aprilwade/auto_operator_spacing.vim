@@ -380,6 +380,7 @@ func s:generic_minus()
   endif
 endfunc
 AutoOperatorSpacingAddRule "generic", "-", funcref('s:generic_minus')
+AutoOperatorSpacingAddRule "generic", "-=", ' -= '
 " }}}
 
 " Python rules {{{

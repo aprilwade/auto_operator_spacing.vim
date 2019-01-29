@@ -12,10 +12,12 @@ Expect:
 Do (Generic unary minus):
   0C
   i=-1\<CR>
+  i-=1\<CR>
   return-1
 
 Expect:
   i = -1
+  i -= 1
   return -1
 
 Given:
