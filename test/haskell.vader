@@ -1,13 +1,13 @@
 Given haskell:
 
-Do (In the middle of an expression):
+Do (Haskell in the middle of an expression):
   i
   i + 3\<ESC>Bi-h \<ESC>
 
 Expect:
   i - h + 3
 
-Do (Multi line):
+Do (Haskell multi line):
   i
   some text+i\<CR>
   \<Tab>-i
@@ -16,7 +16,7 @@ Expect:
   some text + i
       - i
 
-Do (Points free):
+Do (Haskell points free):
   i
   (++)i
 
