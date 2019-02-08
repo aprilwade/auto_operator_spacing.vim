@@ -174,7 +174,16 @@ func s:attempt_respacing()
 
   " Restore the cursor to its original position
   call winrestview(l:save_view)
-  return repeat("\<BS>", l:backspaces) . l:action
+
+  " Figure out the number of trailing spaces so we can delete them
+  let l:dels = 0
+  if searchpos('\%# ', 'n') != [0, 0]
+    " Only if the cursor is over a space are there any to delete
+    let l:next_nonspace = searchpos("[^ ]", "n")[1]
+    let l:dels = l:next_nonspace - col(".")
+  endif
+
+  return repeat("\<BS>", l:backspaces) . l:action . repeat("\<Del>", l:dels)
 endfunc
 
 let s:minint = (-1) / 0

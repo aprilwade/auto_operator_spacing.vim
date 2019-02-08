@@ -42,3 +42,17 @@ Expect:
   i + 1
   if i ==
   ;
+
+Given:
+
+Do (Generic delete leading and trailing spaces):
+  i
+  i          1\<Esc>
+  3hi,\<Esc>
+  o
+  i1\<Esc>
+  i,
+
+Expect:
+  i, 1
+  i, 1
