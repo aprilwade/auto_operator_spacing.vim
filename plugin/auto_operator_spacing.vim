@@ -198,7 +198,7 @@ func s:find_first_match(rule_lists)
       endif
     endfor
     if l:max_weight == s:minint
-      return v:none
+      return v:null
     endif
 
     for rl in a:rule_lists
@@ -603,7 +603,7 @@ AutoOperatorSpacingAddCustomRule "coq", "binop", -1,
 
 " Elm rules {{{
 AutoOperatorSpacingAddRule "elm", ",", ', '
-AutoOperatorSpacingAddRule "elm", ".", v:none
+AutoOperatorSpacingAddRule "elm", ".", v:null
 
 let s:op_symbols = '[!#$%&*+./<=>?@\\^|~:-]'
 AutoOperatorSpacingAddCustomRule "elm", "binop", -1,
@@ -614,7 +614,7 @@ AutoOperatorSpacingAddCustomRule "elm", "binop", -1,
 AutoOperatorSpacingAddRule "haskell", ",", ', '
 AutoOperatorSpacingAddRule "haskell", "(", ' ('
 AutoOperatorSpacingAddRule "haskell", ")", ') '
-AutoOperatorSpacingAddRule "haskell", ".", v:none
+AutoOperatorSpacingAddRule "haskell", ".", v:null
 
 let s:op_symbols = '[!#$%&*+./<=>?@\\^|~:-]'
 AutoOperatorSpacingAddCustomRule "haskell", "binop", -1,
