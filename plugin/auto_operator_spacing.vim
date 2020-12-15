@@ -121,7 +121,7 @@ func s:attempt_respacing()
   let l:MatchingRuleAction = s:find_first_match(l:rule_lists)
   unlet l:rule_lists
 
-  if type(l:MatchingRuleAction) == v:t_none
+  if type(l:MatchingRuleAction) == type(v:null)
     " We didn't find a match.
     call winrestview(l:save_view)
     return ''
@@ -138,7 +138,7 @@ func s:attempt_respacing()
   let l:action = l:MatchingRuleAction(l:start_col)
   unlet l:MatchingRuleAction
 
-  if type(l:action) == v:t_none
+  if type(l:action) == type(v:null)
     " This is a none-action
     call winrestview(l:save_view)
     return ''
