@@ -517,7 +517,7 @@ func s:rust_open_angle()
   elseif s:rust_probably_unary()
     " ^^^ Ditto ^^^
     return ' <'
-  elseif search('\(fn\s\+[a-z0-9_]*\|[A-Z][a-z]*\)\_s*\%#', 'bnW') != 0
+  elseif search('\(fn\s\+[a-z0-9_]*\|[A-Z][a-z0-9]*\)\_s*\%#', 'bnW') != 0
     " Since this follows a CamelCase identifier, its probably a type name
     return '<'
   else
